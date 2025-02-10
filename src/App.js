@@ -1,3 +1,4 @@
+//
 import { useEffect, useState } from "react";
 
 const tempMovieData = [
@@ -49,8 +50,7 @@ const tempWatchedData = [
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({query , setQuery}) {
 
   return (
     <input
@@ -204,19 +204,22 @@ function Main({ children }) {
   return <main className="main">{children}</main>;
 }
 
-const query = "saddfdfdf";
 const KEY = "b63ed038";
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
-
+  
   const [isLoading, setIsLoading] = useState(false);
-  const [error, SetError] = useState("");
+  const [error, setError] = useState("");
+  const [ query, setQuery] = useState("cat");
 
+  
   useEffect(function () {
     async function fetchMovies() {
+      // if(!query) return;
       try {
+        setError("");
         setIsLoading(true);
 
         const res = await fetch(
@@ -224,27 +227,32 @@ export default function App() {
         );
         if (!res.ok) throw new Error("something went wrong with fetching movies");
         const data = await res.json();
-        // console.log(data)
+        console.log(data.Response); 
         if (data.Response === "False") throw new Error("movie not found !!!!");
         
         setMovies(data.Search);
       } catch (err) {
-        SetError(err.message);
+        setError(err.message);
+        // console.log(movies)
       }
       finally{
         setIsLoading(false);
 
       }
     }
-
+    if (query.length<3) {
+      setMovies([]);
+      setError("");
+      return;
+    }
     fetchMovies(); 
-  }, []);
+  }, [query]);
 
   return (
     <>
       <NavBar>
         <Logo />
-        <Search />
+        <Search  query={query} setQuery={setQuery}/>
         <NumResults movies={movies} />
       </NavBar>
       <Main>
