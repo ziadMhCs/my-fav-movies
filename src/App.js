@@ -1,4 +1,5 @@
-import {  useEffect, useState } from "react";
+//
+import { useEffect, useState } from "react";
 
 const tempMovieData = [
   {
@@ -49,8 +50,7 @@ const tempWatchedData = [
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({query , setQuery}) {
 
   return (
     <input
@@ -105,18 +105,16 @@ function Movie({ movie }) {
     </li>
   );
 }
-function ListBox({children}) {
+
+function Box({ children }) {
   //list movies form the search
-  const [isOpen1, setIsOpen1] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
   return (
     <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen1((open) => !open)}
-      >
-        {isOpen1 ? "–" : "+"}
+      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+        {isOpen ? "–" : "+"}
       </button>
-      {isOpen1 && children}
+      {isOpen && children}
     </div>
   );
 }
@@ -182,56 +180,105 @@ function WatchedMoviesList({ watched }) {
     </ul>
   );
 }
-function WatchedBox() {
-  const [isOpen2, setIsOpen2] = useState(true);
-  const [watched, setWatched] = useState(tempWatchedData);
+// function WatchedBox() {
+//   const [isOpen2, setIsOpen2] = useState(true);
 
-  return (
-    <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
-      >
-        {isOpen2 ? "–" : "+"}
-      </button>
-      {isOpen2 && (
-        <>
-          <WatchedSummary watched={watched} />
-          <WatchedMoviesList watched={watched} />
-        </>
-      )}
-    </div>
-  );
-}
+//   return (
+//     <div className="box">
+//       <button
+//         className="btn-toggle"
+//         onClick={() => setIsOpen2((open) => !open)}
+//       >
+//         {isOpen2 ? "–" : "+"}
+//       </button>
+//       {isOpen2 && (
+//         <>
+//           <WatchedSummary watched={watched} />
+//           <WatchedMoviesList watched={watched} />
+//         </>
+//       )}
+//     </div>
+//   );
+// }
 function Main({ children }) {
   return <main className="main">{children}</main>;
 }
 
-const query = "momo";
-const KEY  = "b63ed038";
+const KEY = "b63ed038";
+
 export default function App() {
-  //  fetch(`http://www.omdbapi.com/?apiKEY=b63ed038&s=fuck`)
   const [movies, setMovies] = useState(tempMovieData);
-useEffect(
-  function(){
- fetch(`http://www.omdbapi.com/?apiKEY=${KEY}&s=${query}`).then(response=>response.json()).then(data=>setMovies(data.Search));
+  const [watched, setWatched] = useState(tempWatchedData);
   
-  }
-  ,[])
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [ query, setQuery] = useState("cat");
+
+  
+  useEffect(function () {
+    async function fetchMovies() {
+      // if(!query) return;
+      try {
+        setError("");
+        setIsLoading(true);
+
+        const res = await fetch(
+          `http://www.omdbapi.com/?apiKEY=${KEY}&s=${query}`
+        );
+        if (!res.ok) throw new Error("something went wrong with fetching movies");
+        const data = await res.json();
+        console.log(data.Response); 
+        if (data.Response === "False") throw new Error("movie not found !!!!");
+        
+        setMovies(data.Search);
+      } catch (err) {
+        setError(err.message);
+        // console.log(movies)
+      }
+      finally{
+        setIsLoading(false);
+
+      }
+    }
+    if (query.length<3) {
+      setMovies([]);
+      setError("");
+      return;
+    }
+    fetchMovies(); 
+  }, [query]);
 
   return (
     <>
       <NavBar>
         <Logo />
-        <Search />
+        <Search  query={query} setQuery={setQuery}/>
         <NumResults movies={movies} />
       </NavBar>
       <Main>
-        <ListBox >
-          <MoviesList movies={movies}/>
-        </ListBox>
-        <WatchedBox />
+        <Box>
+          {isLoading && !error && <Loader />}
+          {!isLoading && !error && <MoviesList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
+        </Box>
+        <Box>
+          <WatchedSummary watched={watched} />
+          <WatchedMoviesList watched={watched} />
+        </Box>
+        {/* <WatchedBox /> */}
       </Main>
     </>
+  );
+}
+
+function Loader() {
+  return <p className="loader">loading ...</p>;
+}
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>⛔</span>
+      {message}
+    </p>
   );
 }

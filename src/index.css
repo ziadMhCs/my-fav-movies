@@ -55,8 +55,10 @@ body {
   max-width: 42rem;
   background-color: var(--color-background-500);
   border-radius: 0.9rem;
-  /* overflow: scroll; */
+  overflow-y: auto;
   position: relative;
+
+  
 }
 
 .loader {
@@ -65,12 +67,14 @@ body {
   font-size: 2rem;
   font-weight: 600;
   margin: 4.8rem;
+  color: bisque;
 }
 
 .error {
   text-align: center;
   font-size: 2rem;
   padding: 4.8rem;
+  color: #fa5252;
 }
 
 /* ******* */
