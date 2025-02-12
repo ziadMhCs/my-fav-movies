@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/my-fav-movies/static/css/main.6c76f1ca.css",
+    "main.js": "/my-fav-movies/static/js/main.5035ad19.js",
+    "index.html": "/my-fav-movies/index.html",
+    "main.6c76f1ca.css.map": "/my-fav-movies/static/css/main.6c76f1ca.css.map",
+    "main.5035ad19.js.map": "/my-fav-movies/static/js/main.5035ad19.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6c76f1ca.css",
+    "static/js/main.5035ad19.js"
+  ]
+}
