@@ -338,7 +338,7 @@ function handelCloseMovie(){
         setIsLoading(true);
 
         const res = await fetch(
-          `http://www.omdbapi.com/?apiKEY=${KEY}&s=${query}`
+          `https://www.omdbapi.com/?apiKEY=${KEY}&s=${query}`
         );
         if (!res.ok) throw new Error("something went wrong with fetching movies");
         const data = await res.json();
