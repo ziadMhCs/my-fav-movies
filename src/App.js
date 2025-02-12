@@ -152,7 +152,7 @@ runtime:Number(runtime.split(" ").at(0)),userRating} ;
   useEffect(function(){
     async function getMovieDetailes() {
       setIsLoading(true);
-      const res= await fetch(`http://www.omdbapi.com/?apiKEY=${KEY}&i=${selectedId}`);
+      const res= await fetch(`https://www.omdbapi.com/?apiKEY=${KEY}&i=${selectedId}`);
       const data = await res.json();
       setMovie(data); 
       setIsLoading(false);      
