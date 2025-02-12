@@ -15,7 +15,7 @@ const starContainerStyle= {
 
 
 
-export default function StarRating({maxRating=5,color="gold",size=48,className=""}) {
+export default function StarRating({maxRating=5,color="gold",size=48,className="",onSetRating}) {
 
   const textStyle= {
     // lineHeight :"9px",
@@ -27,6 +27,11 @@ export default function StarRating({maxRating=5,color="gold",size=48,className="
   }
   const[ rating,setRating]= useState(0);
     const[ tempRating,setTempRating]= useState(0);
+    function handleRating(rating) {
+      setRating(rating);
+      onSetRating(rating);
+    }
+
     return (
     <div style={containerStyle}
     className={className}
@@ -38,7 +43,7 @@ export default function StarRating({maxRating=5,color="gold",size=48,className="
         rating={rating}
         key={i}
         full={ tempRating!==0 ? i+1<=tempRating: i+1<=rating}
-        onRate={()=>setRating(i+1)}
+        onRate={()=>handleRating(i+1)}
         onHoverIn ={()=> setTempRating(i+1)} 
         onHoverOut ={()=> setTempRating(0)} 
 
