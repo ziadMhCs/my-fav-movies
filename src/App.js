@@ -1,4 +1,5 @@
-//feature: add new watched movie to the watched movies & implement remove a movie from watched
+//feature: add link page title to the selected movie
+//feature: clean up data fetching
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
@@ -120,7 +121,7 @@ function Box({ children }) {
   );
 }
 
-function MovieDetailes({selectedId,onCloseMovie,handelAdd,onAddWatched,watched={watched}}){
+function MovieDetailes({selectedId,onCloseMovie,handelAdd,onAddWatched,watched}){
   const [movie,setMovie] = useState({});
   const [isLoading,setIsLoading]= useState(false);
 
@@ -161,8 +162,15 @@ runtime:Number(runtime.split(" ").at(0)),userRating} ;
  }
   ,[selectedId])
 
-console.log("renering movies details")
-  return(
+useEffect(function(){
+  if(!title) return
+document.title=`movie | ${title}`
+
+return(function(){document.title="movieeees"});
+},[title])
+
+
+return(
 <>
 {
 
@@ -315,7 +323,6 @@ function handelSelectMovie(id){
   else setSelectedId(id);
 
 
-  console.log(watched);
 }
 function handelCloseMovie(){ 
   setSelectedId(null);}
@@ -331,24 +338,28 @@ function handelCloseMovie(){
   }
 
   useEffect(function () {
+    const controller = new AbortController();
     async function fetchMovies() {
       // if(!query) return;
       try {
         setError("");
         setIsLoading(true);
 
+
         const res = await fetch(
-          `https://www.omdbapi.com/?apiKEY=${KEY}&s=${query}`
+          `https://www.omdbapi.com/?apiKEY=${KEY}&s=${query}` ,{signal:controller.signal}
         );
         if (!res.ok) throw new Error("something went wrong with fetching movies");
         const data = await res.json();
-        console.log(data.Response); 
         if (data.Response === "False") throw new Error("movie not found !!!!");
         
         setMovies(data.Search);
+        setError("");
       } catch (err) {
+
+        if(err.name!=="AbortError")
         setError(err.message);
-        // console.log(movies)
+
       }
       finally{
         setIsLoading(false);
@@ -360,7 +371,10 @@ function handelCloseMovie(){
       setError("");
       return;
     }
+
     fetchMovies(); 
+    return function(){controller.abort()}//clean up effect
+
   }, [query]);
 
   return (
