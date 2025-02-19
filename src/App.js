@@ -1,5 +1,5 @@
-//feature: add link page title to the selected movie
-//feature: clean up data fetching
+//feature: add listener to the escape key 
+
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
@@ -68,7 +68,7 @@ function Logo() {
   return (
     <div className="logo">
       <span role="img">🍿</span>
-      <h1>usePopcorn</h1>
+      <h1>MY FAV MOVIES</h1>
     </div>
   );
 }
@@ -314,7 +314,7 @@ export default function App() {
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [ query, setQuery] = useState("cat");
+  const [ query, setQuery] = useState("");
 const [selectedId,setSelectedId] =useState(null);
   
 function handelSelectMovie(id){
@@ -371,12 +371,23 @@ function handelCloseMovie(){
       setError("");
       return;
     }
-
+    handelCloseMovie();
     fetchMovies(); 
     return function(){controller.abort()}//clean up effect
 
   }, [query]);
+useEffect(function(){
+  function callback(e){
+if (e.code === 'Escape')
+    handelCloseMovie();
+  }
+  document.addEventListener("keydown",callback)
+  return function(){
+    //CLEANUP, prevents form adding the same event listner manytimes to our component on each mount/render
+    document.removeEventListener("keydown",callback);
+  }
 
+},[])
   return (
     <>
       <NavBar>
