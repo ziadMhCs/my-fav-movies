@@ -310,7 +310,10 @@ const KEY = "b63ed038";
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function(){
+    const storedValue  = localStorage.getItem("watched");
+    return JSON.parse(storedValue);
+  });
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -329,7 +332,8 @@ function handelCloseMovie(){
 
 
   function  handelAddWatched(movie){
-    setWatched(watched=>[...watched,movie]);
+
+   setWatched([...watched,movie]);
     handelCloseMovie();
   }
   function handelDeleteWatched(id){
@@ -337,6 +341,13 @@ function handelCloseMovie(){
 
   }
 
+
+  useEffect(function(){
+
+    localStorage.setItem("watched",JSON.stringify(watched));
+
+
+  },[watched])
   useEffect(function () {
     const controller = new AbortController();
     async function fetchMovies() {
