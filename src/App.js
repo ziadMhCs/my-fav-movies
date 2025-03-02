@@ -1,8 +1,11 @@
-//feat: implement custom hook useMovies
+//feat: implement custom hook: useLocalStorageState, this hook is a generic (reusable) hook that can be used to..
+//..set a state (like "watched" in this app) from local storage on first load of the app
+//and updates (keep in sync) the state updates (eg. state "watched") with localstorage (ie. every state update) will result in updating localstorage
 
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
+import {useLocalStorageState} from "./useLocalStorageState"
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -326,10 +329,11 @@ export default function App() {
 
     const {movies,isLoading,error} = useMovies(query);
     
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem("watched");
-    return JSON.parse(storedValue);
-  });
+  const [watched, setWatched] = useLocalStorageState([],"watched")
+
+  
+
+
 
   function handelSelectMovie(id) {
     if (id === selectedId) handelCloseMovie();
@@ -347,14 +351,7 @@ export default function App() {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
-  useEffect(
-    function () {
-      //load saved watched movies form localstorage
 
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
 
   useEffect(function () {
     //keyboard event listners
