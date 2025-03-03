@@ -1,36 +1,25 @@
-//feat: implement custom hook: useLocalStorageState, this hook is a generic (reusable) hook that can be used to..
-//..set a state (like "watched" in this app) from local storage on first load of the app
-//and updates (keep in sync) the state updates (eg. state "watched") with localstorage (ie. every state update) will result in updating localstorage
+//feat: implement custom hook: useKey, this hook is a generic (reusable) hook that can be used to..
+//..add a keypress handerler on each render, then delete it as a cleanup
 
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
 import {useLocalStorageState} from "./useLocalStorageState"
+import { useKey } from "./useLocalStorageState copy";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 function Search({ query, setQuery }) {
   const inputEL = useRef(null);
   
+
   //focus search input + clear it  search when  hit enter
-  useEffect(() => {
-    
-    //listen for Enter key
-    function callback(e) {
-      if (document.activeElement===inputEL.current) return;//if it is already focused...do nothing 
-      
-      if (e.code === "Enter"){
+  useKey("enter",()=>{
+    if (document.activeElement===inputEL.current) return;//if it is already focused...do nothing 
         inputEL.current.focus();//focus 
         setQuery("");
-      } 
-    }
-    document.addEventListener("keydown", callback);
+  })
 
-    return function () {
-      //CLEANUP, prevents form adding the same event listner manytimes to our component on each mount/render
-      document.removeEventListener("keydown", callback);
-    };
-  }, [setQuery]);
   return (
     <input
       className="search"
@@ -352,20 +341,8 @@ export default function App() {
   }
 
 
-
-  useEffect(function () {
-    //keyboard event listners
-    function callback(e) {
-      if (e.code === "Escape") handelCloseMovie();
-    }
-
-    document.addEventListener("keydown", callback);
-    return function () {
-      //CLEANUP, prevents form adding the same event listner manytimes to our component on each mount/render
-      document.removeEventListener("keydown", callback);
-    };
-  }, []);
-  return (
+useKey("escape",handelCloseMovie)
+   return (
     <>
       <NavBar>
         <Logo />
